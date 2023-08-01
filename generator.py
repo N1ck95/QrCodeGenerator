@@ -33,7 +33,7 @@ This function generates a VCard string using the provided data
 @return string - vCard object string representation
 '''
 def generateVCard(name, surname, middlename='', title='', suffix='', company=None, email=[], phone=None, address=None):
-    data = ['BEGIN:VCARD', 'VERSION:4.0']
+    data = ['BEGIN:VCARD', 'VERSION:3.0']
     data.append('FN:{} {}'.format(name, surname))
     data.append('N:{};{};{};{};{}'.format(surname, name, middlename,title, suffix))
     
@@ -93,11 +93,11 @@ The generated qrcode is saved in the qrcode.png file
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("QR Code generator")
     parser.add_argument("--type", choices=['url', 'vcard'], required=True)
-    parser.add_argument("--name", type=str, default=None)
-    parser.add_argument("--surname", type=str, default=None)
-    parser.add_argument("--middlename", type=str, default=None)
-    parser.add_argument("--title", type=str, default=None)
-    parser.add_argument("--suffix", type=str, default=None)
+    parser.add_argument("--name", type=str, default='')
+    parser.add_argument("--surname", type=str, default='')
+    parser.add_argument("--middlename", type=str, default='')
+    parser.add_argument("--title", type=str, default='')
+    parser.add_argument("--suffix", type=str, default='')
     parser.add_argument("--company", type=str, default=None)
     parser.add_argument("--email", nargs='+', default=None)
     parser.add_argument("--phone", type=str, default=None)
@@ -107,15 +107,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.type == 'vcard':
-        if args.name != None and args.surname != None:
+        if args.name != '' and args.surname != '':
             email = []
             type = None
-            for item in args.email:
-                if type is None:
-                    type = item
-                else:
-                    email.append({'type': type, 'email': item})
-                    type = None
+            if args.email is not None:
+                for item in args.email:
+                    if type is None:
+                        type = item
+                    else:
+                        email.append({'type': type, 'email': item})
+                        type = None
             data = generateVCard(args.name, args.surname, middlename=args.middlename, title=args.title, suffix=args.suffix, company=args.company, email=email, phone=args.phone)
         else:
             print("Error: when generating a vCard at least a name and surname is required")
